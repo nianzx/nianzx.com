@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>spring boot 集成aop | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="在日常码代码的过程中，我们经常会遇到很多重复性的，跟业务无关的代码，比如日志打印、权限控制等等,这个时候很多人就会祭出ctrl+c，ctrl+v大法。虽然也解决了问题，但在后期维护过程中，对后面接坑的人来说就很不友好了（没错，我就是那个接坑的TAT）。这个时候就该我们的aop出场了。　　具体参考我的github项目，这里只是解释下相关问题 ###pom中引入aop依赖  &amp;lt;depende">
+<meta name="keywords" content="springboot aop">
+<meta property="og:type" content="article">
+<meta property="og:title" content="spring boot 集成aop">
+<meta property="og:url" content="http://yoursite.com/2019/01/27/spring-boot-集成aop/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="在日常码代码的过程中，我们经常会遇到很多重复性的，跟业务无关的代码，比如日志打印、权限控制等等,这个时候很多人就会祭出ctrl+c，ctrl+v大法。虽然也解决了问题，但在后期维护过程中，对后面接坑的人来说就很不友好了（没错，我就是那个接坑的TAT）。这个时候就该我们的aop出场了。　　具体参考我的github项目，这里只是解释下相关问题 ###pom中引入aop依赖  &amp;lt;depende">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-01-27T13:37:12.298Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="spring boot 集成aop">
+<meta name="twitter:description" content="在日常码代码的过程中，我们经常会遇到很多重复性的，跟业务无关的代码，比如日志打印、权限控制等等,这个时候很多人就会祭出ctrl+c，ctrl+v大法。虽然也解决了问题，但在后期维护过程中，对后面接坑的人来说就很不友好了（没错，我就是那个接坑的TAT）。这个时候就该我们的aop出场了。　　具体参考我的github项目，这里只是解释下相关问题 ###pom中引入aop依赖  &amp;lt;depende">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://yoursite.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-spring-boot-集成aop" class="article article-type-post" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/01/27/spring-boot-集成aop/" class="article-date">
+  <time datetime="2019-01-27T12:30:35.000Z" itemprop="datePublished">2019-01-27</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      spring boot 集成aop
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>　　在日常码代码的过程中，我们经常会遇到很多重复性的，跟业务无关的代码，比如日志打印、权限控制等等,这个时候很多人就会祭出ctrl+c，ctrl+v大法。虽然也解决了问题，但在后期维护过程中，对后面接坑的人来说就很不友好了（<del>没错，我就是那个接坑的TAT</del>）。这个时候就该我们的aop出场了。<br>　　具体参考我的<a href="https://github.com/nianzx/aop" target="_blank" rel="noopener">github项目</a>，这里只是解释下相关问题</p>
+<p>###pom中引入aop依赖</p>
+<pre>
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-aop&lt;/artifactId&gt;
+&lt;/dependency&gt;
+</pre>  
+
+<hr>
+<p>　　切面类在MyAspect里，这边解释下在类中的5个注解，分别是@Before、@After、@AfterReturning、@Around和@AfterThrowing<br>假设对一个方法进行了弄了切面之后，执行的顺序分别是Before、After、AfterReturning，如果在执行过程中有异常，则执行AfterThrowing<br>可以看成是以下的代码  </p>
+<pre>
+try{
+  try{
+    doBefore();//对应@Before注解的方法切面逻辑
+    method.invoke();
+  }finally{
+     doAfter();//对应@After注解的方法切面逻辑
+   }
+     doAfterReturning();//对应@AfterReturning注解的方法切面逻辑
+   }catch(Exception e){
+     doAfterThrowing();//对应@AfterThrowing注解的方法切面逻辑
+}
+</pre>  
+@Around指的是环绕增强，正常能用@Before、@After实现的，就不会用到@Around  
+使用@Around可以实现拦截不执行、修改参数等操作  
+
+JoinPoint对象封装了SpringAop中切面方法的信息，在切面方法中添加JoinPoint参数，就可以获取到封装了该方法信息的JoinPoint对象。  
+这边提供几个常用方法：  
+<pre>
+System.out.println("目标方法名为:" + joinPoint.getSignature().getName());
+System.out.println("目标方法所属类的简单类名:" + joinPoint.getSignature().getDeclaringType().getSimpleName());
+System.out.println("目标方法所属类的类名:" + joinPoint.getSignature().getDeclaringTypeName());
+System.out.println("目标方法声明类型:" + Modifier.toString(joinPoint.getSignature().getModifiers()));
+//获取传入目标方法的参数
+Object[] args = joinPoint.getArgs();
+for (int i = 0; i < args.length; i++) {
+   System.out.println("第" + (i + 1) + "个参数为:" + args[i]);
+}
+</pre>
+
+<p>@AfterReturning注解中有个特有的属性returning，可以取得目标方法的返回值<br><strong>@AfterReturning(returning = “rvt”)</strong></p>
+<p>ProceedingJoinPoint是JoinPoint的一个子接口，@Around特有的参数<br>其中主要方法为proceedingJoinPoint.proceed()，表示执行目标方法，可以带参来实现修改参数</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://yoursite.com/2019/01/27/spring-boot-集成aop/" data-id="cjrey98lb0001ncvrn9xlxumm" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/springboot-aop/">springboot aop</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2019/01/24/解决long类型的数据传到前端精度丢失问题/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">解决long类型的数据传到前端精度丢失问题</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/java-springboot/">java  springboot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/springboot-aop/">springboot aop</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/java-springboot/" style="font-size: 10px;">java  springboot</a> <a href="/tags/springboot-aop/" style="font-size: 10px;">springboot aop</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/01/">January 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/01/27/spring-boot-集成aop/">spring boot 集成aop</a>
+          </li>
+        
+          <li>
+            <a href="/2019/01/24/解决long类型的数据传到前端精度丢失问题/">解决long类型的数据传到前端精度丢失问题</a>
+          </li>
+        
+          <li>
+            <a href="/2018/10/19/hello-world/">Hello World</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 John Doe<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
