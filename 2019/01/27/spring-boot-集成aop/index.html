@@ -675,17 +675,18 @@ for (int i = 0; i < args.length; i++) {
 
   <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
   <script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+  <script src="https://cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.min.js"></script>
    <script type="text/javascript">
         var gitalk = new Gitalk({
-          clientID: '',
-          clientSecret: '',
+          clientID: '3d9a8ff63f3daf9d43ed',
+          clientSecret: '7beaadaa7a8a792a7079aa17ab30590bf1161620',
           repo: 'nianzx.github.io',
-          owner: '',
-          admin: [''],
-          id: location.pathname,
-          distractionFreeMode: ''
+          owner: 'nianzx',
+          admin: ['nianzx'],
+          id: md5(window.location.pathname),
+          distractionFreeMode: 'true'
         })
-        gitalk.render('gitalk-container')           
+        gitalk.render('gitalk-container')
        </script>
 
 
