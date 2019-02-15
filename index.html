@@ -229,6 +229,162 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/15/react-native-滑动事件处理/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="nianzx">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="无名小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/02/15/react-native-滑动事件处理/" itemprop="url">react-native 滑动事件处理</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-15T19:08:21+08:00">
+                2019-02-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>　　去年公司做了一个基于RN的手机端做题项目，其中产品提了一个需求是滑动切换上下题，一开始想着用轮播去实现，找了几个第三方插件写了个demo测试下发现不是很合适，究其原因有两个：</p>
+<p><strong>1、一进去需要加载比较多的题目，用户体验不好，网络不好经常卡顿。<br>2、当题目数多的时候，会爆内存。</strong></p>
+<p>当然可以考虑不用一开始就加载全部，动态加载的形式，不过由于是第三方插件，在没有提供相应方法的时候懒得去看源码修改，所以后面考虑自己实现。<br>　　在谷哥度娘和官方文档的帮助下，找到了一个叫做<strong>Gesture Responder System</strong>的东西（具体参考<a href="https://cloud.tencent.com/developer/section/1373055）" target="_blank" rel="noopener">https://cloud.tencent.com/developer/section/1373055）</a>  </p>
+<p>　　这边提供一个例子,具体代码如下：</p>
+<pre>
+componentWillMount() {
+    //原理是通过第一次触摸的x坐标和最后一次触摸的x坐标,判断距离是否大于50，大于则认为触发动作
+    this._gestureHandlers = {
+      onStartShouldSetResponder: () => false,  //对触摸进行响应
+      onMoveShouldSetResponder: () => true,  //对滑动进行响应
+      onResponderTerminationRequest: () => true,//其他组件申请触摸事件时，是否允许释放当前对该组件的触摸事件
+      onResponderGrant: (evt) => {//激活时做的动作
+        this.start = evt.nativeEvent.locationX;
+      },
+      onResponderRelease: (evt) => {//动作释放后做的动作
+        let end = evt.nativeEvent.locationX;
+        let distance = end - this.start;
+        console.log('滑动距离' + distance);
+        if (distance > 50) {
+          //下一题
+          let count = this.state.count;
+          this.setState({ count: count + 1 });
+
+        } else if (distance < -50) {
+          //上一题
+          let count = this.state.count;
+          this.setState({ count: count - 1 });
+        }
+      },
+    }
+  }
+</pre>
+
+<p>上述的this._gestureHandlers即为主要的处理函数，然后在view中这样使用(注意{…this._gestureHandlers})</p>
+<p><pre><br>render() {<br>    return (<br>      &lt;View {…this._gestureHandlers} style={styles.container}&gt;<br>        &lt;TouchableOpacity onPress={this._onPress}&gt;<br>          &lt;Text style={styles.welcome}&gt;点击文字进行滑动&lt;/Text&gt;<br>        &lt;/TouchableOpacity&gt;<br>        &lt;Text style={styles.instructions}&gt;{this.state.count}&lt;/Text&gt;<br>        &lt;Text style={styles.instructions}&gt;{this.state.msg}&lt;/Text&gt;<br>      &lt;/View&gt;<br>    );<br>  }<br></pre><br>　　模拟器测试了下，完美~但是后面真机测试的时候出问题了，上面的TouchableOpacity始终点击不了，原因是因为模拟器使用的是鼠标，都是单点操作，真机不同，手机触摸的时候是多点的，造成监听函数以为当前是滑动，但是实际上用户只是想要点击，so~继续修改</p>
+<p><pre><br>componentWillMount() {<br>    this._gestureHandlers = PanResponder.create({<br>      //对触摸进行响应，onStartShouldSetPanResponder和onStartShouldSetPanResponderCapture两者有个为true则对触摸进行响应<br>      //先拦截onStartShouldSetPanResponderCapture后拦截onStartShouldSetPanResponder<br>      //只有在触摸拦截返回false的情况下，才会去拦截onMoveShouldSetPanResponderCapture和onMoveShouldSetPanResponder<br>      //onStartShouldSetPanResponder: (e, gestureState) =&gt; { return false; },<br>      //onStartShouldSetPanResponderCapture: (e, gestureState) =&gt; { return false; },<br>      //对滑动进行响应<br>      //拦截顺序是先onMoveShouldSetPanResponderCapture后onMoveShouldSetPanResponder<br>      //onMoveShouldSetPanResponder: (e, gestureState) =&gt; { return false; },<br>      onMoveShouldSetPanResponderCapture: (e, gestureState) =&gt; {<br>        if (Math.abs(gestureState.dx) &gt; 50) {<br>          this.distance = gestureState.dx;<br>          return true;<br>        } else {<br>          return false;<br>        }<br>      },<br>      //onPanResponderGrant: () =&gt; { },//触摸(滑动)开始时<br>      onPanResponderRelease: () =&gt; {//触摸(滑动)结束时<br>        if (this.distance &gt; 50) {<br>          //下一题<br>          let count = this.state.count;<br>          this.setState({ count: count + 1 });<br>        } else if (this.distance &lt; -50) {<br>          //上一题<br>          let count = this.state.count;<br>          this.setState({ count: count - 1 });<br>        }<br>      },<br>      //其他组件申请触摸事件时，是否允许释放当前对该组件的触摸事件<br>      onPanResponderTerminationRequest: () =&gt; true,<br>    });<br>  }<br></pre><br>然后将{…this._gestureHandlers}改成{…this._gestureHandlers.panHandlers}</p>
+<p>　　测试了下，完美！</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/27/spring-boot-集成aop/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -694,7 +850,7 @@ private Long userId;
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -707,7 +863,7 @@ private Long userId;
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
