@@ -5,7 +5,7 @@
   
 
 
-<html class="theme-next muse use-motion" lang="zh-Hans">
+<html class="theme-next gemini use-motion" lang="zh-Hans">
 <head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -95,7 +95,7 @@
   var NexT = window.NexT || {};
   var CONFIG = {
     root: '/',
-    scheme: 'Muse',
+    scheme: 'Gemini',
     version: '5.1.4',
     sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
     fancybox: true,
@@ -227,6 +227,149 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/25/nginx虚拟主机配置/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="nianzx">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="无名小站">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/02/25/nginx虚拟主机配置/" itemprop="url">nginx虚拟主机配置</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-25T15:13:33+08:00">
+                2019-02-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>　　在配置nginx反向代理时，location和proxy_pass后面加不加/，很多人都不会去注意这个细节，实际上加不加区别还是很大的，下面就举个具体的例子来说明。</p>
+<h2 id="一些准备工作"><a href="#一些准备工作" class="headerlink" title="一些准备工作"></a>一些准备工作</h2><h3 id="tomcat"><a href="#tomcat" class="headerlink" title="tomcat"></a>tomcat</h3><p>　　首先准备一个tomcat，在webapps里放置两个项目demo1和demo2，项目里面创建一个test.jsp,内容如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">&lt;%@ page contentType=&quot;text/html;charset=UTF-8&quot; language=&quot;java&quot; %&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;Title&lt;/title&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;%</span><br><span class="line">	String remoteAddr = request.getRemoteAddr();</span><br><span class="line">    String forwarded = request.getHeader(&quot;X-Forwarded-For&quot;);</span><br><span class="line">    String realIp = request.getHeader(&quot;X-Real-IP&quot;);</span><br><span class="line">	int port = request.getServerPort();</span><br><span class="line">	StringBuffer requestURL = request.getRequestURL();</span><br><span class="line">%&gt;</span><br><span class="line">ip=&lt;%=remoteAddr%&gt;</span><br><span class="line">&lt;br/&gt;</span><br><span class="line">X-Forwarded-For=&lt;%=forwarded%&gt;</span><br><span class="line">&lt;br/&gt;</span><br><span class="line">X-Real-IP=&lt;%=realIp%&gt;</span><br><span class="line">&lt;br/&gt;</span><br><span class="line">port=&lt;%=port%&gt;</span><br><span class="line">&lt;br/&gt;</span><br><span class="line">requestURL = &lt;%=requestURL%&gt;</span><br><span class="line">&lt;br/&gt;</span><br><span class="line">&lt;img src=&quot;tomcat.png&quot;  alt=&quot;tomcat&quot; /&gt;</span><br><span class="line">&lt;br/&gt;</span><br><span class="line">当前访问文件路径：demo1/test.jsp</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure></p>
+<p>demo2里的也一样建立test.jsp，内容一样，除了最后文件路径不同<br>另外在ROOT文件夹下建立三个文件，分别是test.jsp,demo1test.jsp和demo2test.jsp,用途后面讲，内容跟上面一样</p>
+<h3 id="nginx"><a href="#nginx" class="headerlink" title="nginx"></a>nginx</h3><p>接着准备一个nginx，虚拟主机配置如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">	listen 8081;</span><br><span class="line">	server_name 192.168.44.153;</span><br><span class="line">	location /demo1/ &#123;</span><br><span class="line">		proxy_pass http://127.0.0.1:8080/;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">server &#123;</span><br><span class="line">	listen 8082;</span><br><span class="line">	server_name 192.168.44.153;</span><br><span class="line">	location /demo1/ &#123;</span><br><span class="line">		proxy_pass http://127.0.0.1:8080;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">server &#123;</span><br><span class="line">	listen 8083;</span><br><span class="line">	server_name 192.168.44.153;</span><br><span class="line">	location /demo1/ &#123;</span><br><span class="line">		proxy_pass http://127.0.0.1:8080/demo2/;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">server &#123;</span><br><span class="line">	listen 8084;</span><br><span class="line">	server_name 192.168.44.153;</span><br><span class="line">	location /demo1/ &#123;</span><br><span class="line">		proxy_pass http://127.0.0.1:8080/demo2;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">server &#123;</span><br><span class="line">	listen 8085;</span><br><span class="line">	server_name 192.168.44.153;</span><br><span class="line">	location /demo1 &#123;</span><br><span class="line">		proxy_pass http://127.0.0.1:8080/;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">server &#123;</span><br><span class="line">	listen 8086;</span><br><span class="line">	server_name 192.168.44.153;</span><br><span class="line">	location /demo1 &#123;</span><br><span class="line">		proxy_pass http://127.0.0.1:8080;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">server &#123;</span><br><span class="line">	listen 8087;</span><br><span class="line">	server_name 192.168.44.153;</span><br><span class="line">	location /demo1 &#123;</span><br><span class="line">		proxy_pass http://127.0.0.1:8080/demo2/;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">server &#123;</span><br><span class="line">	listen 8088;</span><br><span class="line">	server_name 192.168.44.153;</span><br><span class="line">	location /demo1 &#123;</span><br><span class="line">		proxy_pass http://127.0.0.1:8080/demo2;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="proxy-pass后面"><a href="#proxy-pass后面" class="headerlink" title="proxy_pass后面/"></a>proxy_pass后面/</h2><h3 id="首先我们先验证proxy-pass后面加不加-的影响"><a href="#首先我们先验证proxy-pass后面加不加-的影响" class="headerlink" title="首先我们先验证proxy_pass后面加不加/的影响"></a>首先我们先验证proxy_pass后面加不加/的影响</h3><h4 id="1、proxy-pass根目录后面加"><a href="#1、proxy-pass根目录后面加" class="headerlink" title="1、proxy_pass根目录后面加/"></a>1、proxy_pass根目录后面加/</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location /demo1/ &#123;</span><br><span class="line">	proxy_pass http://127.0.0.1:8080/;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>访问<a href="http://192.168.44.153:8081/demo1/test.jsp" target="_blank" rel="noopener">http://192.168.44.153:8081/demo1/test.jsp</a> 结果如下：<br><img src="/images/nginx虚拟主机配置/图片1.png" alt="图片1"></p>
+<h4 id="2、proxy-pass根目录后面不加"><a href="#2、proxy-pass根目录后面不加" class="headerlink" title="2、proxy_pass根目录后面不加/"></a>2、proxy_pass根目录后面不加/</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location /demo1/ &#123;</span><br><span class="line">	proxy_pass http://127.0.0.1:8080;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>访问<a href="http://192.168.44.153:8082/demo1/test.jsp" target="_blank" rel="noopener">http://192.168.44.153:8082/demo1/test.jsp</a> 结果如下：<br><img src="/images/nginx虚拟主机配置/图片2.png" alt="图片2"></p>
+<h4 id="3、proxy-pass项目名后加"><a href="#3、proxy-pass项目名后加" class="headerlink" title="3、proxy_pass项目名后加/"></a>3、proxy_pass项目名后加/</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location /demo1/ &#123;</span><br><span class="line">	proxy_pass http://127.0.0.1:8080/demo2/;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>访问<a href="http://192.168.44.153:8083/demo1/test.jsp" target="_blank" rel="noopener">http://192.168.44.153:8083/demo1/test.jsp</a> 结果如下：<br><img src="/images/nginx虚拟主机配置/图片3.png" alt="图片3"></p>
+<h4 id="4、proxy-pass项目名后不加"><a href="#4、proxy-pass项目名后不加" class="headerlink" title="4、proxy_pass项目名后不加/"></a>4、proxy_pass项目名后不加/</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location /demo1/ &#123;</span><br><span class="line">	proxy_pass http://127.0.0.1:8080/demo2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>访问<a href="http://192.168.44.153:8084/demo1/test.jsp" target="_blank" rel="noopener">http://192.168.44.153:8084/demo1/test.jsp</a> 结果如下：<br><img src="/images/nginx虚拟主机配置/图片4.png" alt="图片4"></p>
+<h2 id="location后面"><a href="#location后面" class="headerlink" title="location后面/"></a>location后面/</h2><h3 id="接着我们先验证location后面加不加-的影响"><a href="#接着我们先验证location后面加不加-的影响" class="headerlink" title="接着我们先验证location后面加不加/的影响"></a>接着我们先验证location后面加不加/的影响</h3><h4 id="5、proxy-pass根目录后面加"><a href="#5、proxy-pass根目录后面加" class="headerlink" title="5、proxy_pass根目录后面加/"></a>5、proxy_pass根目录后面加/</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location /demo1 &#123;</span><br><span class="line">	proxy_pass http://127.0.0.1:8080/;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>访问<a href="http://192.168.44.153:8085/demo1/test.jsp" target="_blank" rel="noopener">http://192.168.44.153:8085/demo1/test.jsp</a> 结果如下：<br><img src="/images/nginx虚拟主机配置/图片5.png" alt="图片5"></p>
+<h4 id="6、proxy-pass根目录后面不加"><a href="#6、proxy-pass根目录后面不加" class="headerlink" title="6、proxy_pass根目录后面不加/"></a>6、proxy_pass根目录后面不加/</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location /demo1 &#123;</span><br><span class="line">	proxy_pass http://127.0.0.1:8080;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>访问<a href="http://192.168.44.153:8086/demo1/test.jsp" target="_blank" rel="noopener">http://192.168.44.153:8086/demo1/test.jsp</a> 结果如下：<br><img src="/images/nginx虚拟主机配置/图片6.png" alt="图片6"></p>
+<h4 id="7、proxy-pass项目名后加"><a href="#7、proxy-pass项目名后加" class="headerlink" title="7、proxy_pass项目名后加/"></a>7、proxy_pass项目名后加/</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location /demo1 &#123;</span><br><span class="line">	proxy_pass http://127.0.0.1:8080/demo2/;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>访问<a href="http://192.168.44.153:8087/demo1/test.jsp" target="_blank" rel="noopener">http://192.168.44.153:8087/demo1/test.jsp</a> 结果如下：<br><img src="/images/nginx虚拟主机配置/图片7.png" alt="图片7"></p>
+<h4 id="8、proxy-pass项目名后不加"><a href="#8、proxy-pass项目名后不加" class="headerlink" title="8、proxy_pass项目名后不加/"></a>8、proxy_pass项目名后不加/</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location /demo1 &#123;</span><br><span class="line">	proxy_pass http://127.0.0.1:8080/demo2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>访问<a href="http://192.168.44.153:8088/demo1/test.jsp" target="_blank" rel="noopener">http://192.168.44.153:8088/demo1/test.jsp</a> 结果如下：<br><img src="/images/nginx虚拟主机配置/图片8.png" alt="图片8"></p>
+<h2 id="其他一些细节"><a href="#其他一些细节" class="headerlink" title="其他一些细节"></a>其他一些细节</h2><p>　　写到这里可能就有人要问了，X-Forwarded-For和X-Real-IP是什么鬼？我们注意看下上面的截图，会发现后端使用request.getRequestURL()得到的地址都是错误的，这个是因为经过nginx代理后，用getRequestURL()得到的地址其实是nginx里配置的proxy_pass地址，所以如果想要得到正确的地址，需要对nginx追加参数，具体配置如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">	listen 8082;</span><br><span class="line">	server_name 192.168.44.153;</span><br><span class="line">	location /demo1/ &#123;</span><br><span class="line">		proxy_set_header  Host $host:$server_port;</span><br><span class="line">		proxy_set_header  X-Real-IP  $remote_addr;</span><br><span class="line">		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">		proxy_pass http://127.0.0.1:8080;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>结果如下:<br><img src="/images/nginx虚拟主机配置/proxy_set_header后.png" alt="proxy_set_header后"><br>　　这边主要是第一句<code>proxy_set_header  Host $host:$server_port;</code>起的作用，意思是重新定义发往后端的Host请求头，而$host和$server_port是nginx默认的两个变量。通过这句可以使后端得到的ip和端口正确。<br>　　而后面两句其实是为了得到客户端真实ip和经过几个代理节点的。<br>　　例如我这边在172.16.39.11上在部署一台nginx，转向本地(192.168.44.153)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">	listen 8082;</span><br><span class="line">	server_name 192.168.44.153;</span><br><span class="line">	location /demo1/ &#123;</span><br><span class="line">		proxy_set_header  Host $host:$server_port;</span><br><span class="line">		proxy_set_header  X-Real-IP  $remote_addr;</span><br><span class="line">		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">		proxy_pass http://192.168.44.153:8082/demo1/;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>此时访问<a href="http://172.16.39.11:8082/demo1/test.jsp" target="_blank" rel="noopener">http://172.16.39.11:8082/demo1/test.jsp</a>　　可以得到如下结果：<br><img src="/images/nginx虚拟主机配置/多级代理.png" alt="多级代理"><br>　　可以看出X-Real-IP是最后一个节点ip，而X-Forwarded-For是该请求经过了几个节点的集合，如果要让X-Real-IP指向客户端真实ip，可以在除第一台nginx外的其他nginx上把proxy_set_header  X-Real-IP  $remote_addr;改成proxy_set_header  X-Real-IP  $http_x_real_ip; 即可变成客户端真实ip。<br>　　另外，这边的request.getRemoteAddr()配置nginx后至始至终都是错误的，说明后端在写代码的时候，尽量少用这个函数获取，最好是自己封装一个方法，先从X-Forwarded-For或X-Real-IP取，取不到了再从getRemoteAddr()中取。</p>
+<p>参考资料：<br>　　实战Nginx：取代Apache的高性能Web服务器 张宴<br>　　精通Nginx(第2版)<br>下载地址：<br>链接: <a href="https://pan.baidu.com/s/1h4qYIWe6NV4YfPVrOwsKeg" target="_blank" rel="noopener">https://pan.baidu.com/s/1h4qYIWe6NV4YfPVrOwsKeg</a> 提取码: pxym</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -734,7 +877,7 @@ private Long userId;
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -747,7 +890,7 @@ private Long userId;
               
               <div class="site-state-item site-state-tags">
                 
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">标签</span>
                 
               </div>
@@ -802,7 +945,7 @@ private Long userId;
 
 
 
-  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
 
 
 
@@ -908,6 +1051,13 @@ private Long userId;
 
   
   
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
 
   
 
