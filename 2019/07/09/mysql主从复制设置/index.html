@@ -93,7 +93,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://blog.nianzx.com/images/mysql主从复制/主库状态.png">
 <meta property="og:image" content="https://blog.nianzx.com/images/mysql主从复制/从库状态.png">
-<meta property="og:updated_time" content="2020-03-09T09:37:32.192Z">
+<meta property="og:updated_time" content="2020-03-10T08:21:39.306Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="mysql主从复制设置">
 <meta name="twitter:description" content="前言　　最近换了一个工作，接了一个坑灰常大的项目，这个项目很老了，几年的数据下来，数据库都是百万级别的，生产环境经常有用户投诉卡顿问题，之前把该弄索引的都弄了，好了许多，但还是会卡，所以搞了读写分离，这边先介绍下主从复制。 环境准备　　这边先准备两台centOS7的虚拟机，用来模拟生产环境的两台数据库服务器。然后各自装好mysql，注意如果先装好一台，然后采用克隆方式会导致后面主从失败，原因是克隆">
@@ -329,7 +329,8 @@
 <p>　　刷新<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flush privileges;</span><br></pre></td></tr></table></figure></p>
 <p>　　查看主库状态<br><img src="/images/mysql主从复制/主库状态.png" alt="主库状态"></p>
 <p>注意：执行完这个步骤后不要再操作主数据库了，防止主数据库状态值变化</p>
-<p>　　在从库中执行同步命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">change master to master_host=&apos;192.168.1.5&apos;,master_user=&apos;slave&apos;,master_password=&apos;123456&apos;,master_log_file=&apos;mysql-bin.000005&apos;,master_log_pos=2714;</span><br></pre></td></tr></table></figure></p>
+<p>　　将数据库备份到从库还原</p>
+<p>　　还原成功后在从库中执行同步命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">change master to master_host=&apos;192.168.1.5&apos;,master_user=&apos;slave&apos;,master_password=&apos;123456&apos;,master_log_file=&apos;mysql-bin.000005&apos;,master_log_pos=2714;</span><br></pre></td></tr></table></figure></p>
 <p>其中master_log_file和master_log_pos对应上图的file和position</p>
 <p>　　开启同步功能<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">start slave;</span><br></pre></td></tr></table></figure></p>
 <p>　　检查从库状态 show slave status\G;<br><img src="/images/mysql主从复制/从库状态.png" alt="从库状态"><br>注意图上红框，这两个值都为yes才算配置成功</p>
@@ -485,7 +486,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-count">11</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
