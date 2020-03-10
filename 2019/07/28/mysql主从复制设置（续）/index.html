@@ -83,18 +83,18 @@
 
 
 
-<meta name="description" content="前言　　之前有写过mysql主从复制，使用那个方法必须在一开始使用，那可不可以在线上数据库不停机的情况下增加从库呢？今天就来说说怎么在线上不停机的情况下增加从库。 环境准备　　主库(master）:192.168.1.5:3306　　从库（slave）:192.168.1.8:3306 配置　　参考前文mysql配置修改和创建同步账号 　　接下来是重点 　　在前文中备份数据库的时候我们使用以下命令">
+<meta name="description" content="前言　　之前有写过mysql主从复制，使用那个方法必须在一开始使用，那可不可以在线上数据库不停机的情况下增加从库呢？今天就来说说怎么在线上不停机的情况下增加从库。 配置　　参考前文mysql配置修改和创建同步账号 　　接下来是重点 　　在前文中备份数据库的时候我们使用以下命令进行备份1mysqldump -u数据库账号 -p数据库密码 数据库名 --skip-lock-tables --singl">
 <meta name="keywords" content="mysql 主从复制">
 <meta property="og:type" content="article">
 <meta property="og:title" content="mysql主从复制设置（续）">
 <meta property="og:url" content="https://blog.nianzx.com/2019/07/28/mysql主从复制设置（续）/index.html">
 <meta property="og:site_name" content="无名小站">
-<meta property="og:description" content="前言　　之前有写过mysql主从复制，使用那个方法必须在一开始使用，那可不可以在线上数据库不停机的情况下增加从库呢？今天就来说说怎么在线上不停机的情况下增加从库。 环境准备　　主库(master）:192.168.1.5:3306　　从库（slave）:192.168.1.8:3306 配置　　参考前文mysql配置修改和创建同步账号 　　接下来是重点 　　在前文中备份数据库的时候我们使用以下命令">
+<meta property="og:description" content="前言　　之前有写过mysql主从复制，使用那个方法必须在一开始使用，那可不可以在线上数据库不停机的情况下增加从库呢？今天就来说说怎么在线上不停机的情况下增加从库。 配置　　参考前文mysql配置修改和创建同步账号 　　接下来是重点 　　在前文中备份数据库的时候我们使用以下命令进行备份1mysqldump -u数据库账号 -p数据库密码 数据库名 --skip-lock-tables --singl">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-03-10T08:46:08.302Z">
+<meta property="og:updated_time" content="2020-03-10T08:47:49.892Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="mysql主从复制设置（续）">
-<meta name="twitter:description" content="前言　　之前有写过mysql主从复制，使用那个方法必须在一开始使用，那可不可以在线上数据库不停机的情况下增加从库呢？今天就来说说怎么在线上不停机的情况下增加从库。 环境准备　　主库(master）:192.168.1.5:3306　　从库（slave）:192.168.1.8:3306 配置　　参考前文mysql配置修改和创建同步账号 　　接下来是重点 　　在前文中备份数据库的时候我们使用以下命令">
+<meta name="twitter:description" content="前言　　之前有写过mysql主从复制，使用那个方法必须在一开始使用，那可不可以在线上数据库不停机的情况下增加从库呢？今天就来说说怎么在线上不停机的情况下增加从库。 配置　　参考前文mysql配置修改和创建同步账号 　　接下来是重点 　　在前文中备份数据库的时候我们使用以下命令进行备份1mysqldump -u数据库账号 -p数据库密码 数据库名 --skip-lock-tables --singl">
 
 
 
@@ -315,7 +315,6 @@
 
       
         <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>　　之前有写过<a href="https://blog.nianzx.com/2019/07/09/mysql%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%E8%AE%BE%E7%BD%AE/">mysql主从复制</a>，使用那个方法必须在一开始使用，那可不可以在线上数据库不停机的情况下增加从库呢？今天就来说说怎么在线上不停机的情况下增加从库。</p>
-<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><p>　　主库(master）:192.168.1.5:3306<br>　　从库（slave）:192.168.1.8:3306</p>
 <h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>　　参考前文mysql配置修改和创建同步账号</p>
 <p>　　<strong>接下来是重点</strong></p>
 <p>　　在前文中备份数据库的时候我们使用以下命令进行备份<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqldump -u数据库账号 -p数据库密码 数据库名 --skip-lock-tables --single-transaction --flush-logs --hex-blob --master-data=2 &gt; 导出的sql文件名字.sql</span><br></pre></td></tr></table></figure></p>
@@ -522,7 +521,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#环境准备"><span class="nav-number">2.</span> <span class="nav-text">环境准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置"><span class="nav-number">3.</span> <span class="nav-text">配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置"><span class="nav-number">2.</span> <span class="nav-text">配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>
